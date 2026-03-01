@@ -7,10 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model HealthCheck {
+model User {
   id        String   @id @default(uuid())
-  status    String
+  name      String
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete
 
-  @@map("health_checks")
+  @@map("users")
 }
