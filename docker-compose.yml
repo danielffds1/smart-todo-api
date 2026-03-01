@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: smarttodo-postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: smarttodo_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - smarttodo-network
+
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: smarttodo-pgadmin
+    restart: always
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@smarttodo.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
+    networks:
+      - smarttodo-network
+
+
+volumes:
+  postgres_data:
+
+
+networks:
+  smarttodo-network:
+    driver: bridge
