@@ -21,9 +21,12 @@ async function bootstrap() {
     .setTitle('SmartTodo API')
     .setDescription('API do SmartTodo')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('Auth')
     .addTag('Users')
     .addTag('Health')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/docs', app, document);
  

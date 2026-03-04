@@ -1,16 +1,20 @@
-import { Controller, Post, HttpCode, HttpStatus, Body, Query, Get, Param, Patch, Delete } from "@nestjs/common";
+import { Controller, Post, HttpCode, HttpStatus, Body, Query, Get, Param, Patch, Delete, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { QueryUserDto } from "./dto/query-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Cria um novo usuário' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Usuário criado com sucesso' })
@@ -22,6 +26,7 @@ export class UsersController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Lista todos os usuários' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Lista de usuários' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Dados inválidos' })
@@ -31,6 +36,7 @@ export class UsersController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Busca um usuário por ID' })
   @ApiParam({ name: 'id', description: 'ID do usuário' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Usuário encontrado com sucesso' })
@@ -41,6 +47,7 @@ export class UsersController {
  
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Atualizar usuário' })
   @ApiParam({ name: 'id', description: 'UUID do usuário' })
   @ApiBody({ type: UpdateUserDto })
@@ -53,6 +60,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Remover usuário (soft delete)' })
   @ApiParam({ name: 'id', description: 'UUID do usuário' })
   @ApiResponse({ status: 204, description: 'Usuário removido' })
