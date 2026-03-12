@@ -7,6 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TodoStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+
+enum TodoPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -15,6 +28,34 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime? // Soft delete
-
+  
+  // Relacionamento: Um usuário pode ter vários todos
+  todos Todo[]
+  // Mapeamento para a tabela users
   @@map("users")
+}
+
+model Todo {
+  id        String   @id @default(uuid())
+  userId    String //Foreing Key para User
+  title     String
+  description String?
+  status      TodoStatus   @default(PENDING)
+  priority    TodoPriority @default(MEDIUM)
+  category    String?
+  city        String?
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relacionamento: Um todo pertence a um usuário
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("todos")
+  // Índices para melhorar performance nas queries
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
 }

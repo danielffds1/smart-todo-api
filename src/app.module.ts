@@ -8,6 +8,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { HealthModule } from './modules/health/health.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { TodosModule } from './modules/todos/todos.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './modules/auth/auth.module';
     HealthModule,
     UsersModule,
     AuthModule,
+    TodosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
