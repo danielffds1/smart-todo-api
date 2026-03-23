@@ -33,3 +33,82 @@ cd smart-todo-api
 
 # Instalar dependências
 npm install
+
+---
+
+## 📚 Principais endpoints
+
+> Todos os endpoints estão versionados sob o prefixo: `/api/v1`
+
+### 🔐 Auth (`/auth`)
+
+- **POST** `/auth/register`  
+  Registra um novo usuário.
+
+- **POST** `/auth/login`  
+  Autentica o usuário e retorna um **access token JWT**.
+
+- **GET** `/auth/profile`  
+  Retorna o usuário autenticado.  
+  **Requer** header: `Authorization: Bearer <token>`.
+
+---
+
+### 👤 Users (`/users`)
+
+> Todos os endpoints abaixo requerem **JWT** válido.
+
+- **GET** `/users`  
+  Lista usuários com filtros e paginação.
+
+- **GET** `/users/:id`  
+  Busca usuário por ID.
+
+- **POST** `/users`  
+  Cria um novo usuário.
+
+- **PATCH** `/users/:id`  
+  Atualiza dados do usuário.
+
+- **DELETE** `/users/:id`  
+  Realiza soft delete (marca `deletedAt`).
+
+---
+
+### ✅ Todos (`/todos`)
+
+> Endpoints para tarefas do **usuário autenticado**.  
+> Requerem header `Authorization: Bearer <token>`.
+
+- **GET** `/todos`  
+  Lista tarefas com:
+  - Paginação: `limit`, `offset`
+  - Filtros: `status`, `priority`, `category`, `city`
+  - Busca textual: `search` (em `title` e `description`)
+  - Ordenação: `sort` (campo) e `order` (`asc`/`desc`)
+
+- **GET** `/todos/:id`  
+  Retorna uma tarefa específica do usuário logado.
+
+- **POST** `/todos`  
+  Cria uma nova tarefa.  
+  Regra de negócio: a tarefa **sempre nasce com status `PENDING`**.
+
+- **PATCH** `/todos/:id`  
+  Atualiza campos da tarefa (título, descrição, datas, etc.).
+
+- **PATCH** `/todos/:id/status`  
+  Atualiza apenas o status da tarefa (`PENDING`, `IN_PROGRESS`, `COMPLETED`).
+
+- **DELETE** `/todos/:id`  
+  Realiza soft delete (marca `deletedAt`).
+
+---
+
+### 🌦 Weather (`/weather`)
+
+- **GET** `/weather/current`  
+  Retorna informações de clima atual para uma cidade, utilizando a integração com serviço externo de clima.
+
+> **Dica:** A documentação detalhada (schemas, exemplos de request/response e autenticação) está disponível no Swagger em:  
+> `http://localhost:3000/api/v1/docs`

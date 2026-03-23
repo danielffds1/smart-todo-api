@@ -8,4 +8,8 @@ export default () => ({
         secret: process.env.JWT_SECRET,
         expiration: process.env.JWT_EXPIRATION || '24H',
     },
+    openweather: {
+        apiKey: process.env.OPENWEATHER_API_KEY,
+        baseUrl: process.env.OPENWEATHER_URL || 'https://api.openweathermap.org/data/2.5',
+    }
 });
