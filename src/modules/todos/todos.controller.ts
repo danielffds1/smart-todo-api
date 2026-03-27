@@ -10,7 +10,6 @@ import {
     UseGuards,
     HttpCode,
     HttpStatus,
-    BadRequestException,
   } from '@nestjs/common';
   import { TodosService } from './todos.service';
   import { CreateTodoDto } from './dto/create-todo.dto';
@@ -20,7 +19,6 @@ import {
   import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
   import { GetUser } from '../../common/decorators/get-user.decorator';
   import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-  import { WeatherService } from '../../integration/weather/weather.service';
  
   @ApiTags('Todos')
   @ApiBearerAuth()
@@ -29,7 +27,6 @@ import {
   export class TodosController {
     constructor(
       private readonly todosService: TodosService, 
-      private readonly weatherService: WeatherService,
     ) {}
  
     @Post()
@@ -89,22 +86,7 @@ import {
       @GetUser('id') userId: string,
       @Param('id') id: string,
     ) {
-      // Busca a tarefa
-      const todo = await this.todosService.findOne(userId, id);
-
-      if (!todo.city) {
-        throw new BadRequestException('Esta tarefa não possui cidade configurada');
-      }
-      // Busca clima atual
-      const weather = await this.weatherService.getCurrentWeather(todo.city);
-      return {
-        todo: {
-          id: todo.id,
-          title: todo.title,
-          city: todo.city,
-        },
-        weather,
-      };
+      return this.todosService.getTodoWeather(userId, id);
     }
 
     @Get(':id/best-time')
@@ -112,22 +94,6 @@ import {
       @GetUser('id') userId: string,
       @Param('id') id: string,
     ) {
-      const todo = await this.todosService.findOne(userId, id);
-
-      if (!todo.city) {
-        throw new BadRequestException('Esta tarefa não possui cidade configurada');
-      }
-  
-      const bestTime = await this.weatherService.getBestTime(todo.city, todo.category ?? undefined);
-  
-      return {
-        todo: {
-          id: todo.id,
-          title: todo.title,
-          category: todo.category,
-          city: todo.city,
-        },
-        recommendation: bestTime,
-      };
+      return this.todosService.getTodoBestTime(userId, id);
     }
 }

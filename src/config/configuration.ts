@@ -11,5 +11,10 @@ export default () => ({
     openweather: {
         apiKey: process.env.OPENWEATHER_API_KEY,
         baseUrl: process.env.OPENWEATHER_URL || 'https://api.openweathermap.org/data/2.5',
-    }
+    },
+    gemini: {
+        apiKey: process.env.GEMINI_API_KEY,
+        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+        maxTokens: parseInt(process.env.GEMINI_MAX_TOKENS || '1000', 10),
+    },
 });

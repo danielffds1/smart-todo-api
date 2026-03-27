@@ -6,10 +6,14 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 import { QueryTodoDto } from './dto/query-todo.dto';
 import { TodoEntity } from './entities/todo.entity';
 import { TodoStatus } from '@prisma/client';
+import { WeatherService } from 'src/integration/weather/weather.service';
 
 @Injectable()
 export class TodosService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly weatherService: WeatherService,
+  ) {}
 
   async create(userId: string, createTodoDto: CreateTodoDto): Promise<TodoEntity> {
     if (createTodoDto.status && createTodoDto.status !== TodoStatus.PENDING) {
@@ -150,5 +154,47 @@ export class TodosService {
     if (todo.userId !== userId) {
       throw new ForbiddenException('Você não tem permissão para acessar esta tarefa');
     }
+  }
+
+  async getTodoWeather(userId: string, id: string){
+    const todo =await this.findOne(userId, id);
+
+    if(!todo.city){
+      throw new BadRequestException('Esta tarefa não possui cidade configurada');
+    }
+
+    // Busca clima atual
+    const weather = await this.weatherService.getCurrentWeather(todo.city);
+
+    return {
+      todo: {
+        id: todo.id,
+        title: todo.title,
+        city: todo.city,
+      },
+      weather,
+    };
+  }
+
+  async getTodoBestTime(userId: string, id: string){
+    // Busca a tarefa
+    const todo = await this.findOne(userId, id);
+
+    if(!todo.city){
+      throw new BadRequestException('Esta tarefa não possui cidade configurada');
+    }
+
+    // Busca o melhor horário para realizar a tarefa
+    const bestTime = await this.weatherService.getBestTime(todo.city, todo.category ?? undefined);
+
+    return {
+      todo: {
+        id: todo.id,
+        title: todo.title,
+        category: todo.category,
+        city: todo.city,
+      },
+      recommendation: bestTime,
+    };
   }
 }
