@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, forwardRef, Inject } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
@@ -14,7 +14,7 @@ export class TodosService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly weatherService: WeatherService,
-    private readonly aiService: AIService,
+    @Inject(forwardRef(() => AIService)) private readonly aiService: AIService,
   ) {}
 
   async create(userId: string, createTodoDto: CreateTodoDto): Promise<TodoEntity> {

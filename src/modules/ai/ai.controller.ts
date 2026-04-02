@@ -1,18 +1,24 @@
-import { Controller, Post, Get, Body, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, UseGuards, HttpCode, HttpStatus, Param } from '@nestjs/common';
 import { AIService } from './ai.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { GetUser } from '../../common/decorators/get-user.decorator';
 import { GenerateDescriptionDto } from './dto/generate-description.dto';
 import { SuggestCategoryDto } from './dto/suggest-category.dto';
 import { AnalyzeProductivityDto } from './dto/analyze-productivity.dto';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { WeatherService } from 'src/integration/weather/weather.service';
+import { TodosService } from '../todos/todos.service';
 
 @ApiTags('AI')
 @ApiBearerAuth()
 @Controller('ai')
 @UseGuards(JwtAuthGuard)
 export class AIController {
-  constructor(private readonly aiService: AIService) {}
+  constructor(
+    private readonly aiService: AIService,
+    private readonly weatherService: WeatherService,
+    private readonly todosService: TodosService
+  ) {}
 
   @Post('generate-description')
   @HttpCode(HttpStatus.OK)
@@ -58,5 +64,26 @@ export class AIController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Dados inválidos' })
   optimizeTasks(@GetUser('id') userId: string) {
     return this.aiService.optimizeTasks(userId);
+  }
+
+  //Sugere alternativas baseadas no clima da cidade da tarefa
+  @Get('weather-suggestions/:taskId')
+  @ApiOperation({ 
+    summary: 'Sugerir alternativas baseadas no clima',
+    description: 'Analisa a tarefa e o clima da cidade, sugerindo alternativas se as condições não forem favoráveis'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Sugestões geradas com sucesso' 
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Tarefa não encontrada ou sem cidade configurada' 
+  })
+  async getWeatherSuggestions(
+    @GetUser('id') userId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.aiService.getWeatherSuggestionsForTask(userId, taskId);
   }
 }

@@ -73,3 +73,43 @@ export class GenerateDescriptionResponseDto {
       Object.assign(this, partial);
     }
   }
+
+  export class WeatherSuggestionsResponseDto {
+    task: {
+      id: string;
+      title: string;
+      description?: string;
+      category?: string;
+      city?: string;
+    };
+    
+    weather: {
+      city: string;
+      temperature: number;
+      description: string;
+      is_raining: boolean;
+      is_good_for_outdoor: boolean;
+      conditions_summary: string;
+    };
+  
+    ai_analysis: {
+      can_proceed_original: boolean;
+      reason: string;
+      recommendations: string[];
+    };
+  
+    alternative_suggestions: Array<{
+      type: string;
+      title: string;
+      description: string;
+      specific_places?: string[];
+      why_suggested: string;
+    }>;
+  
+    final_recommendation: string;
+    tokens_used: number;
+  
+    constructor(partial: Partial<WeatherSuggestionsResponseDto>) {
+      Object.assign(this, partial);
+    }
+  }

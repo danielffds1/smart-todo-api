@@ -15,6 +15,6 @@ export default () => ({
     gemini: {
         apiKey: process.env.GEMINI_API_KEY,
         model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-        maxTokens: parseInt(process.env.GEMINI_MAX_TOKENS || '1000', 10),
+        maxTokens: parseInt(process.env.GEMINI_MAX_TOKENS || '500', 10),
     },
 });
