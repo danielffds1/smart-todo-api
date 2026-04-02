@@ -96,4 +96,13 @@ import {
     ) {
       return this.todosService.getTodoBestTime(userId, id);
     }
+
+    //Sugerindo melhor horário com IA
+    @Post(':id/ai-enhance')
+    async enhanceTodoWithAi(
+      @GetUser('id') userId: string,
+      @Param('id') id: string,
+    ) {
+      return this.todosService.enhanceTodoWithAi(userId, id);
+    }
 }

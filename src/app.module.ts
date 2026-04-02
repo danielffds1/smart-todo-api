@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TodosModule } from './modules/todos/todos.module';
 import { WeatherModule } from './integration/weather/weather.module';
+import { AIModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { WeatherModule } from './integration/weather/weather.module';
     AuthModule,
     TodosModule,
     WeatherModule,
+    AIModule,
   ],
 })
 export class AppModule {}

@@ -7,12 +7,14 @@ import { QueryTodoDto } from './dto/query-todo.dto';
 import { TodoEntity } from './entities/todo.entity';
 import { TodoStatus } from '@prisma/client';
 import { WeatherService } from 'src/integration/weather/weather.service';
+import { AIService } from '../ai/ai.service';
 
 @Injectable()
 export class TodosService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly weatherService: WeatherService,
+    private readonly aiService: AIService,
   ) {}
 
   async create(userId: string, createTodoDto: CreateTodoDto): Promise<TodoEntity> {
@@ -195,6 +197,45 @@ export class TodosService {
         city: todo.city,
       },
       recommendation: bestTime,
+    };
+  }
+
+  async enhanceTodoWithAi(userId: string, id: string){
+    // Busca a tarefa
+    const todo = await this.findOne(userId, id);
+
+    // Gera descrição se não existir
+    let generatedDescription: string | undefined;
+
+    if(!todo.description){
+      const descriptionResult = await this.aiService.generateDescription(todo.title);
+      generatedDescription = descriptionResult.generated_description;
+    }
+
+    // Sugere categoria se não existir
+    let suggestedCategory: string | undefined;
+
+    if(!todo.category){
+      const categoryResult = await this.aiService.suggestCategory(todo.title, generatedDescription || todo.description || undefined);
+      suggestedCategory = categoryResult.suggested_category;
+    }
+
+    //Atualiza a tarefa com a descrição e categoria geradas
+    const updates: any = {};
+    if(generatedDescription) updates.description = generatedDescription;
+    if(suggestedCategory) updates.category = suggestedCategory;
+
+    let updatedTodo = todo;
+    if(Object.keys(updates).length > 0){
+      updatedTodo = await this.update(userId, id, updates);
+    }
+
+    return {
+      todo: updatedTodo,
+      ai_enhancements: {
+        description_generated: !!generatedDescription,
+        category_suggested: !!suggestedCategory,
+      },
     };
   }
 }
