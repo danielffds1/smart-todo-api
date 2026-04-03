@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TodosModule } from './modules/todos/todos.module';
 import { WeatherModule } from './integration/weather/weather.module';
 import { AIModule } from './modules/ai/ai.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AIModule } from './modules/ai/ai.module';
     TodosModule,
     WeatherModule,
     AIModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
